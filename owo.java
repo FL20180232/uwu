@@ -91,12 +91,18 @@ public class ExportDialog extends JDialog {
 			JButton okButton = new JButton("OK");
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (rdo_ini.isSelected() == true) {
+					
 
 						JFileChooser fcExporter = new JFileChooser() {
 
 							public boolean accept(File f) {
-								return (f.getName().toLowerCase().endsWith(".ini") || f.isDirectory());
+								
+								if (rdo_ini.isSelected() == true) {
+									return (f.getName().toLowerCase().endsWith(".ini") || f.isDirectory());
+								}
+								else {
+									return (f.getName().toLowerCase().endsWith(".properties") || f.isDirectory());
+								}
 							}
 						};
 						fcExporter
@@ -106,15 +112,26 @@ public class ExportDialog extends JDialog {
 						int ret = fcExporter.showSaveDialog(c_Analyzer);
 
 						if (JFileChooser.APPROVE_OPTION == ret) {
+							if (rdo_ini.isSelected() == true) 
+							{
 							((Analyzer) c_Analyzer).jButtonSaveConfig_actionPerformed(null);
 							File exportIniFile = fcExporter.getSelectedFile();
 							String exportReport = mainWindow.exportToIni(exportIniFile );
 							Analyzer.getUserProperties()
 									.setStandardExportIniPath(exportIniFile.getParentFile().getAbsolutePath());
 							new ExportReportDialog((Analyzer) c_Analyzer, exportReport);
+							}
+							else {
+								((Analyzer) c_Analyzer).jButtonSaveConfig_actionPerformed(null);
+								File exportPropertiesFile = fcExporter.getSelectedFile();
+								String exportReport = mainWindow.exportToIni(exportPropertiesFile );
+								Analyzer.getUserProperties()
+										.setStandardExportIniPath(exportPropertiesFile.getParentFile().getAbsolutePath());
+								new ExportReportDialog((Analyzer) c_Analyzer, exportReport);
+							}
 						}
 
-					} 
+					
 
 				}
 			});
@@ -155,21 +172,6 @@ public class ExportDialog extends JDialog {
 	    StringBuilder changedKeys = new StringBuilder();
 	    changedKeys.append("These Keys were changed at the internals-File:").append("\n");
 	    return keyToReplace;
-	    /**try {
-
-	      BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(internalsFile), "UTF8"));
-
-	      String line = reader.readLine();
-
-	      StringBuilder contents = new StringBuilder();
-	      // Read the whole content of the internals-File
-	      while (null != line) {
-	        contents.append(line);
-	        contents.append(System.getProperty("line.separator"));
-	        line = reader.readLine();
-
-	      }
-  reader.close();**/
 }
 	
 }
